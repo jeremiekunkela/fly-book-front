@@ -5,7 +5,7 @@ import { useAuth } from "./context/Auth";
 const ProtectedRoute = ({ children }) => {
     const { contextValue } = useAuth();
     const { token } = contextValue;
-
+    console.log('token from protected route', token);
 
 
     if (!token) {

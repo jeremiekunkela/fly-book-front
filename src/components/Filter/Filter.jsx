@@ -1,9 +1,6 @@
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { IconButton } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import styles from './Filter.module.css';
@@ -11,13 +8,12 @@ import styles from './Filter.module.css';
 const Filter = (props) => {
     const { 
         airports,
-        date,
         arrivalAirport,
         departureAirport,
         handleArrivalAirport,
         handleDepartureAirport,
-        handleDate,
-        enableSearch
+        enableSearch,
+        onSearch
     } = props;
 
     return (
@@ -39,15 +35,10 @@ const Filter = (props) => {
                     value={departureAirport}
                     renderInput={(params) => <TextField {...params} label="Arrival airport" />}
                 />
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker 
-                        label="Departure date"
-                        onChange={handleDate}
-                        value={date}
-                        disablePast
-                    />
-                </LocalizationProvider>
-                <IconButton disabled={!enableSearch}>
+                <IconButton 
+                    disabled={!enableSearch}
+                    onClick={onSearch}
+                >
                     <Search />
                 </IconButton>
             </div>
@@ -74,7 +65,8 @@ Filter.propTypes = {
     handleArrivalAirport: PropTypes.func.isRequired, 
     handleDepartureAirport: PropTypes.func.isRequired, 
     handleDate: PropTypes.func.isRequired, 
-    enableSearch: PropTypes.bool.isRequired 
+    enableSearch: PropTypes.bool.isRequired,
+    onSearch: PropTypes.func.isRequired
 };
 
 export default Filter;

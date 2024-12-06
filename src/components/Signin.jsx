@@ -13,6 +13,7 @@ import { styled } from '@mui/material/styles';
 import client from '../api';
 import { useNavigate } from "react-router-dom";
 import { useAlert } from '../context/Alert';
+import { useAuth } from '../context/Auth';
 
 
 
@@ -65,7 +66,10 @@ export default function SignIn() {
   const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
 
   const navigate = useNavigate();
-  const { showAlert } = useAlert();
+  const { showAlert,  } = useAlert();
+  const { contextValue } = useAuth();
+  const { setToken } = contextValue;
+
 
 
   const handleSubmit = async (event) => {
@@ -85,7 +89,8 @@ export default function SignIn() {
 
     try {
       const response = await client.post("/client/login", formData);
-      localStorage.setItem('token', response.data)
+      setToken(response.data);
+    
       navigate("/");
     } catch (error) {
       showAlert('Error while signing up', 'error');

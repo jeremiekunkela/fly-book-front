@@ -1,28 +1,45 @@
 
 import Filter from "../../components/Filter/Filter";
 import styles from "./HomePage.module.css";
-import airports from '../../airports';
 import { useState, useEffect } from 'react';
+import client from "../../api";
 
 
 const HomePage = () => {
+  const [airports, setAirports] = useState([]);
   const [arrivalAirport, setArrivalAirport] = useState('');
   const [departureAirport, setDepartureAirport] = useState('');
-  const [date, setDate] = useState(null);
   const [enableSearch, setEnableSearch] = useState(false);
+
+useEffect(() => {
+  client.get('/airport/all').then((response) => {
+    setAirports(response.data);
+  });
+}, []);
 
 
   useEffect(() => {
-    if (departureAirport && arrivalAirport && date) {
+    if (departureAirport && arrivalAirport) {
       setEnableSearch(true);
     } else {
       setEnableSearch(false);
     }
-  }, [departureAirport, arrivalAirport, date]);
+  }, [departureAirport, arrivalAirport]);
 
-  console.log('departureAirport:', departureAirport);
-  console.log('arrivalAirport:', arrivalAirport);
-  console.log('date:', date);
+  const search = () => {
+    if(enableSearch) {
+      client.get('/flights/search', {
+        params: {
+          departureAirport: departureAirport,
+          arrivalAirport: arrivalAirport,
+        },
+      }).then((response) => {
+        console.log(response.data);
+      });
+    }
+  };
+
+
   
 
     return (
@@ -31,11 +48,10 @@ const HomePage = () => {
             airports={airports}
             arrivalAirport={arrivalAirport}
             departureAirport={departureAirport}
-            date={date}
-            handleDate={(newValue) => setDate(newValue)}
             handleArrivalAirport={(event, newValue) => setArrivalAirport(newValue)}
             handleDepartureAirport={(event, newValue) => setDepartureAirport(newValue)}
             enableSearch={enableSearch}
+            onSearch={search}
             />
         </div>
     );
