@@ -13,6 +13,7 @@ import {
 import { styled } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import client from '../api';
+import { useAlert } from '../context/Alert';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -44,6 +45,8 @@ export default function SignUp() {
   const [firstNameErrorMessage, setFirstNameErrorMessage] = useState("");
 
   const navigate = useNavigate();
+  const { showAlert } = useAlert();
+
 
   const validateInputs = (data) => {
     let isValid = true;
@@ -66,16 +69,16 @@ export default function SignUp() {
       setPasswordErrorMessage("");
     }
 
-    if (!data.name || data.name.length < 1) {
+    if (!data.lastname || data.lastname.length < 1) {
       setNameError(true);
-      setNameErrorMessage("Name is required.");
+      setNameErrorMessage("Lastname is required.");
       isValid = false;
     } else {
       setNameError(false);
       setNameErrorMessage("");
     }
 
-    if (!data.firstName || data.firstName.length < 1) {
+    if (!data.firstname || data.firstname.length < 1) {
       setFirstNameError(true);
       setFirstNameErrorMessage("FirstName is required.");
       isValid = false;
@@ -93,8 +96,8 @@ export default function SignUp() {
     const data = new FormData(event.target);
 
     const formData = {
-      name: data.get("name"),
-      firstName: data.get("firstName"),
+      lastname: data.get("name"),
+      firstname: data.get("firstName"),
       email: data.get("email"),
       password: data.get("password"),
       confirmPassword: data.get("password"),
@@ -109,7 +112,9 @@ export default function SignUp() {
       const response = await client.post("/client/signup", formData);
       console.log(response);
       navigate("/signin");
+      showAlert('Successfully signed up', 'success');
     } catch (error) {
+      showAlert('Error occurred while signing up', 'error');
       console.error("Sign-up error:", error);
     }
   };

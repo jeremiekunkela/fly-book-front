@@ -12,6 +12,8 @@ import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import client from '../api';
 import { useNavigate } from "react-router-dom";
+import { useAlert } from '../context/Alert';
+
 
 
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -63,6 +65,7 @@ export default function SignIn() {
   const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
 
   const navigate = useNavigate();
+  const { showAlert } = useAlert();
 
 
   const handleSubmit = async (event) => {
@@ -81,10 +84,11 @@ export default function SignIn() {
     }
 
     try {
-      const response = await client.post("/client/signup", formData);
+      const response = await client.post("/client/login", formData);
       console.log(response);
       navigate("/");
     } catch (error) {
+      showAlert('Error while signing up', 'error');
       console.error("Sign-up error:", error);
     }
   }
