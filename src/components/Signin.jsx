@@ -10,6 +10,9 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
+import client from '../api';
+import { useNavigate } from "react-router-dom";
+
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -59,18 +62,32 @@ export default function SignIn() {
   const [passwordError, setPasswordError] = useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
 
+  const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
-    if (emailError || passwordError) {
-      event.preventDefault();
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const data = new FormData(event.target);
+
+    const formData = {
+      email: data.get("email"),
+      password: data.get("password"),
+    }
+
+    if (!validateInputs(formData)) {
+      console.log("Validation failed");
       return;
     }
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-  };
+
+    try {
+      const response = await client.post("/client/signup", formData);
+      console.log(response);
+      navigate("/");
+    } catch (error) {
+      console.error("Sign-up error:", error);
+    }
+  }
 
   const validateInputs = () => {
     const email = document.getElementById('email');
