@@ -85,7 +85,7 @@ export default function SignIn() {
 
     try {
       const response = await client.post("/client/login", formData);
-      console.log(response);
+      localStorage.setItem('token', response.data)
       navigate("/");
     } catch (error) {
       showAlert('Error while signing up', 'error');
