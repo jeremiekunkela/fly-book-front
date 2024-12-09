@@ -3,6 +3,7 @@ import Filter from "../../components/Filter/Filter";
 import styles from "./HomePage.module.css";
 import { useState, useEffect } from 'react';
 import client from "../../api";
+import { useAlert } from "../../context/Alert";
 
 
 const HomePage = () => {
@@ -10,11 +11,17 @@ const HomePage = () => {
   const [arrivalAirport, setArrivalAirport] = useState('');
   const [departureAirport, setDepartureAirport] = useState('');
   const [enableSearch, setEnableSearch] = useState(false);
+  const { showAlert,  } = useAlert();
 
 useEffect(() => {
-  client.get('/airport/all').then((response) => {
-    setAirports(response.data);
-  });
+  client.get('/airport/all')
+    .then((response) => {
+      setAirports(response.data);
+    })
+    .catch((error)=> {
+      showAlert('Error while getting airport', 'error');
+      console.error('Get airports error:', error);
+    })
 }, []);
 
 
