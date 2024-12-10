@@ -5,22 +5,30 @@ import SigninPage from './pages/Signin/Signin'
 import ProtectedRoute from "./ProtectedRoutes"
 import AuthProvider from './context/Auth'
 import { AlertProvider } from './context/Alert'
+import { Graphics } from './pages/Graphics/Graphics'
 
 function App() {
 
   return (
     <>
-    <AlertProvider>
-      <AuthProvider>
+      <AlertProvider>
+        <AuthProvider>
           <BrowserRouter>
             <Routes>
-            <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
-              <Route path="/signup" element={<SignupPage/>} />
-              <Route path="/signin" element={<SigninPage/>} />
+              <Route path="/" element={
+                <ProtectedRoute><HomePage />
+                </ProtectedRoute>
+              } />
+              <Route path="/graphics" element={
+                <ProtectedRoute><Graphics />
+                </ProtectedRoute>
+              } />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/signin" element={<SigninPage />} />
             </Routes>
           </BrowserRouter>
         </AuthProvider>
-    </AlertProvider>
+      </AlertProvider>
     </>
   )
 }

@@ -7,6 +7,7 @@ import { Card } from "../../components/Card/Card";
 import ExchangeRateSelector from "../../components/ExchangeRateSelector/ExchangeRateSelector";
 import currencySymbolMapping from "../../currencySymbolMapping";
 import CircularProgress from '@mui/material/CircularProgress';
+import Header from "../../components/Header/Header";
 
 const HomePage = () => {
   const [airports, setAirports] = useState([]);
@@ -71,6 +72,7 @@ const HomePage = () => {
 
   return (
     <div className={styles.container}>
+      <Header />
       {isLoading ? (
         <div className={styles.loading}>
           <CircularProgress />
