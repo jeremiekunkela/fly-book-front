@@ -61,7 +61,7 @@ const HomePage = () => {
 
   const convertedFlights = flights.map((flight) => ({
     ...flight,
-    priceConverted: Math.round(flight.price * exchangeRate?.rate),
+    priceConverted: (flight.price * exchangeRate?.rate).toFixed(2),
     symbol: currencySymbolMapping[exchangeRate?.currency],
   }));
 
