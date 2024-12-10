@@ -9,3 +9,10 @@
     gap: 1rem;
     justify-content: center;
 }
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}

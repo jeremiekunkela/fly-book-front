@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Modal as MuiModal,
   Box,
@@ -9,6 +9,11 @@ import {
   TextField,
 } from "@mui/material";
 import PassengerDetailsForm from "../PassengerDetailsForm/PassengerDetailsForm";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import client from "../../api";
+import { useAlert } from "../../context/Alert";
+import dayJs from "dayjs";
 
 const style = {
   position: "absolute",
@@ -23,18 +28,22 @@ const style = {
 };
 
 export default function Modal(props) {
-  const { open, handleClose } = props;
+  const { open, handleClose, flight, exchangeRate } = props;
+
+  const { currency } = exchangeRate || {};
 
   const [numberOfPassengers, setNumberOfPassengers] = useState(1);
-  const [activeStep, setActiveStep] = useState(-1); 
+  const [departureDate, setDepartureDate] = useState(new Date());
+  const [activeStep, setActiveStep] = useState(-1);
   const [details, setDetails] = useState([]);
+  const { showAlert } = useAlert();
 
   const initializeDetails = (count) => {
     const initialDetails = Array.from({ length: count }, () => ({
-      firstName: "",
-      lastName: "",
-      age: "",
-      luggage: "",
+      firstname: "",
+      lastname: "",
+      birthday: "",
+      nbLuggage: "",
     }));
     setDetails(initialDetails);
     setActiveStep(0);
@@ -54,10 +63,10 @@ export default function Modal(props) {
   const isCurrentStepValid = () => {
     const currentDetails = details[activeStep];
     return (
-      currentDetails.firstName.trim() &&
-      currentDetails.lastName.trim() &&
-      currentDetails.age.trim() &&
-      currentDetails.luggage.trim()
+      currentDetails.firstname.trim() &&
+      currentDetails.lastname.trim() &&
+      currentDetails.birthday &&
+      currentDetails.nbLuggage.trim()
     );
   };
 
@@ -71,12 +80,32 @@ export default function Modal(props) {
     if (activeStep > 0) {
       setActiveStep(activeStep - 1);
     } else {
-      setActiveStep(-1); 
+      setActiveStep(-1);
     }
   };
 
-  const handleSubmit = () => {
-    console.log("Détails des passagers soumis :", details);
+  const handleSubmit = async () => {
+    const { departureAirport, arrivalAirport } = flight || {};
+    const departureAirportName = departureAirport?.airportName || "";
+    const arrivalAirportName = arrivalAirport?.airportName || "";
+
+    const data = {
+      departureDate: departureDate,
+      profilDTORequestList: details,
+      departureAirport: departureAirportName,
+      arrivalAirport: arrivalAirportName,
+      currency,
+    };
+
+    try {
+      const response = await client.post("/reservation/add", data);
+      showAlert("Reservation successfully", "success");
+      console.log("Réponse du serveur :", response);
+    } catch (error) {
+      showAlert("Error while booking flight", "error");
+      console.error("Erreur lors de la réservation :", error);
+    }
+
     handleClose();
   };
 
@@ -99,6 +128,16 @@ export default function Modal(props) {
               fullWidth
               sx={{ mb: 2 }}
             />
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="Date de départ"
+                value={dayJs(departureDate)}
+                format="YYYY/MM/DD"
+                onChange={(newValue) => setDepartureDate(newValue)}
+                renderInput={(params) => <TextField {...params} />}
+                sx={{ mb: 2 }}
+              />
+            </LocalizationProvider>
             <Button
               onClick={() => initializeDetails(numberOfPassengers)}
               variant="contained"
@@ -122,7 +161,9 @@ export default function Modal(props) {
                 updateDetails(activeStep, key, value)
               }
             />
-            <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+            <Box
+              sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}
+            >
               <Button onClick={handleBack} variant="outlined">
                 {activeStep === 0 ? "Retour" : "Précédent"}
               </Button>
