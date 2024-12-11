@@ -1,5 +1,4 @@
-import React from "react";
-import client from "../../api";
+import React, { useState, useEffect } from "react";
 import { Line } from "react-chartjs-2";
 import {
     Chart as ChartJS,
@@ -14,69 +13,139 @@ import {
 
 import styles from './LineChart.module.css';
 
-
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const LineChart = () => {
-    const getStreamAxios = async () => {
-        await client.get('/currencies/fetch-rates', {
-            headers: {
-                'Accept': 'text/event-stream',
-            },
-            responseType: 'stream',
-            adapter: 'fetch',
-        })
-            .then(async (response) => {
-                console.log('axios got a response');
-                const stream = response.data;
+    const months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
 
-                const reader = stream.pipeThrough(new TextDecoderStream()).getReader();
-                while (true) {
-                    const { value, done } = await reader.read();
-                    if (done) break;
-                    console.log(value);
-                }
-            })
-    }
+    const initialCounts = JSON.parse(localStorage.getItem("reservationCounts")) || {
+        success: Array(12).fill(100),
+        failed: Array(12).fill(100),
+    };
 
-    console.log(getStreamAxios(), "FZFA A DFA DFA DFA");
-    
+    const [counts, setCounts] = useState(initialCounts);
 
-    const data = {
-        labels: ["January", "February", "March", "April", "May", "June", "July"],
+    const [chartData, setChartData] = useState({
+        labels: months,
         datasets: [
-            {
-                label: "Revenue",
-                data: [10, 20, 30, 40, 50, 60, 70],
-                fill: false,
-                borderColor: "rgb(75, 192, 192)",
-                tension: 0.1,
+            {                
+                display: false,
+                data: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
+                visible: false,
+                borderColor: "transparent",
+                backgroundColor: 'transparent',
             },
             {
-                label: "Expenses",
-                data: [50, 40, 30, 20, 10, 5, 0],
-                fill: false,
-                borderColor: "rgb(255, 99, 132)",
-                tension: 0.1,
+                label: "Success",
+                data: counts.success,
+                borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                yAxisID: 'y',
+            },
+            {
+                label: "Failed",
+                data: counts.failed,
+                borderColor: 'rgb(255, 99, 132)',
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                yAxisID: 'y',
             },
         ],
-    };
+    });
+
+    useEffect(() => {
+        const eventSource = new EventSource("http://localhost:8080/realtime/reservation");
+
+        eventSource.onmessage = (event) => {
+            try {
+                const eventType = event.data;
+                const currentMonth = new Date().getMonth();
+
+                setCounts((prevCounts) => {
+                    const updatedCounts = {
+                        success: [...prevCounts.success],
+                        failed: [...prevCounts.failed],
+                    };
+
+                    if (eventType === "success") {
+                        updatedCounts.success[currentMonth] += 1;
+                    } else if (eventType === "failed") {
+                        updatedCounts.failed[currentMonth] += 1;
+                    }
+
+                    localStorage.setItem("reservationCounts", JSON.stringify(updatedCounts));
+
+                    setChartData((prevChartData) => ({
+                        ...prevChartData,
+                        datasets: [
+                            {
+                                ...prevChartData.datasets[0],
+                                data: updatedCounts.success.map(count =>
+                                    count >= 0 && count <= 10 ? count * 8 : count
+                                ),
+                            },
+                            {
+                                ...prevChartData.datasets[1],
+                                data: updatedCounts.failed.map(count =>
+                                    count >= 0 && count <= 10 ? count * 8 : count 
+                                ),
+                            },
+                        ],
+                    }));
+
+                    return updatedCounts;
+                });
+            } catch (error) {
+                console.error("Erreur lors du traitement des données :", error);
+            }
+        };
+
+        eventSource.onerror = (error) => {
+            console.error("Erreur SSE :", error);
+            eventSource.close();
+        };
+
+        return () => eventSource.close();
+    }, [counts]);
 
     const options = {
         responsive: true,
+        interaction: {
+            mode: 'index',
+            intersect: false,
+        },
+        stacked: false,
         plugins: {
-            legend: { position: "bottom" },
-            title: { display: true, text: "Monthly Revenue" },
+            title: {
+                display: true,
+                text: 'Monthly Success vs Failed Transactions',
+            },
+        },
+        scales: {
+            y: {
+                type: 'linear',
+                display: true,
+                position: 'left',
+            },
+            y1: {
+                type: 'linear',
+                display: false,
+                position: 'right',
+                grid: {
+                    drawOnChartArea: false,
+                },
+            },
         },
     };
 
     return (
         <div className={styles.container}>
             <h2>Graphics</h2>
-            <Line data={data} options={options} className={styles.containerChart} />
+            <Line data={chartData} options={options} className={styles.containerChart} />
         </div>
     );
-
 };
 
 export default LineChart;

@@ -1,16 +1,22 @@
 .container {
     padding: 100px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 h2 {
-    margin-bottom: 2rem;
+    margin-bottom: 5rem;
     font-size: 2rem;
 }
 
 .containerChart {
     width: 100% !important;
     height: 100% !important;
+    max-width: 1000px;
     display: flex;
     justify-content: center;
-    align-items: center
+    align-items: center;
 }
