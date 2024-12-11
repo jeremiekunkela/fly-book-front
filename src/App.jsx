@@ -5,6 +5,7 @@ import SigninPage from './pages/Signin/Signin'
 import ProtectedRoute from "./ProtectedRoutes"
 import AuthProvider from './context/Auth'
 import { AlertProvider } from './context/Alert'
+import Reservation from './pages/Reservation/Reservation'
 
 function App() {
 
@@ -15,6 +16,7 @@ function App() {
           <BrowserRouter>
             <Routes>
             <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+            <Route path="/reservations" element={<ProtectedRoute><Reservation /></ProtectedRoute>} />
               <Route path="/signup" element={<SignupPage/>} />
               <Route path="/signin" element={<SigninPage/>} />
             </Routes>
