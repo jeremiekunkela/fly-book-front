@@ -25,6 +25,7 @@ export default function PassengerDetailsForm(props) {
         <DatePicker
           label="Date de naissance"
           value={dayJs(details.birthday)}
+          disableFuture
           format="YYYY/MM/DD"
           onChange={(newValue) => updateDetails("birthday", newValue)}
           renderInput={(params) => <TextField {...params} />}

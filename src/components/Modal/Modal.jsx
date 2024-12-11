@@ -133,6 +133,7 @@ export default function Modal(props) {
                 label="Date de départ"
                 value={dayJs(departureDate)}
                 format="YYYY/MM/DD"
+                disablePast
                 onChange={(newValue) => setDepartureDate(newValue)}
                 renderInput={(params) => <TextField {...params} />}
                 sx={{ mb: 2 }}
