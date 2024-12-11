@@ -20,7 +20,7 @@ const HomePage = () => {
 
   useEffect(() => {
     const fetchInitialData = async () => {
-      setIsLoading(true); 
+      setIsLoading(true);
       try {
         const airportResponse = await client.get("/airport/all");
         setAirports(airportResponse.data);
@@ -28,7 +28,7 @@ const HomePage = () => {
         const flightResponse = await client.get("/flight/all");
         setFlights(flightResponse.data);
 
-        const exchangeRateResponse = await client.get("/currencies/fetch-rates"); 
+        const exchangeRateResponse = await client.get("/currencies/fetch-rates");
         setExchangeRates(exchangeRateResponse.data);
 
         if (exchangeRateResponse.data.length > 0) {
@@ -48,7 +48,7 @@ const HomePage = () => {
   const search = async () => {
     if (!departureAirport || !arrivalAirport) return;
 
-    setIsLoading(true); 
+    setIsLoading(true);
     try {
       const response = await client.post("/flight/search", {
         departureAirport,
@@ -63,6 +63,21 @@ const HomePage = () => {
     }
   };
 
+  const clearFilters = async () => {
+    setDepartureAirport("");
+    setArrivalAirport("");
+    setIsLoading(true);  
+    try {
+      const response = await client.get("/flight/all");
+      setFlights(response.data); 
+    } catch (error) {
+      showAlert("Error while fetching all flights", "error");
+      console.error("Fetch all flights error:", error);
+    } finally {
+      setIsLoading(false); 
+    }
+  };
+
   const convertedFlights = flights.map((flight) => ({
     ...flight,
     priceConverted: (flight.price * exchangeRate?.rate).toFixed(2),
@@ -74,7 +89,7 @@ const HomePage = () => {
       {isLoading ? (
         <div className={styles.loading}>
           <CircularProgress />
-          </div>
+        </div>
       ) : (
         <>
           <div className={styles.filters}>
@@ -86,6 +101,7 @@ const HomePage = () => {
               handleDepartureAirport={(event, newValue) => setDepartureAirport(newValue)}
               enableSearch={Boolean(departureAirport && arrivalAirport)}
               onSearch={search}
+              onClear={clearFilters}  
             />
             <ExchangeRateSelector
               exchangeRates={exchangeRates}

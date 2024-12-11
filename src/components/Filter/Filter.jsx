@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
-import { Select, MenuItem, FormControl, InputLabel, IconButton } from '@mui/material';
+import { Select, MenuItem, FormControl, InputLabel, IconButton, Button } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import styles from './Filter.module.css';
+import ClearIcon from '@mui/icons-material/Clear';
 
 const Filter = (props) => {
   const {
@@ -12,6 +13,7 @@ const Filter = (props) => {
     handleDepartureAirport,
     enableSearch,
     onSearch,
+    onClear,  
   } = props;
 
   return (
@@ -22,7 +24,7 @@ const Filter = (props) => {
           <Select
             labelId="departure-airport-label"
             value={departureAirport || ''}
-            onChange={(event) => handleDepartureAirport(null, event.target.value)}
+            onChange={(event) => handleDepartureAirport(null,event.target.value)}
             label="Departure airport"
           >
             {airports.map((airport) => (
@@ -38,7 +40,7 @@ const Filter = (props) => {
           <Select
             labelId="arrival-airport-label"
             value={arrivalAirport || ''}
-            onChange={(event) => handleArrivalAirport(null, event.target.value)}
+            onChange={(event) => handleArrivalAirport(null,event.target.value)}
             label="Arrival airport"
           >
             {airports.map((airport) => (
@@ -55,6 +57,13 @@ const Filter = (props) => {
         >
           <Search />
         </IconButton>
+
+        <IconButton
+          disabled={!enableSearch}
+          onClick={onClear}
+        >
+          <ClearIcon />
+        </IconButton>
       </div>
     </div>
   );
@@ -68,6 +77,7 @@ Filter.propTypes = {
   handleDepartureAirport: PropTypes.func.isRequired,
   enableSearch: PropTypes.bool.isRequired,
   onSearch: PropTypes.func.isRequired,
+  onClear: PropTypes.func.isRequired,  // Ajout de la validation de la prop onClear
 };
 
 export default Filter;
