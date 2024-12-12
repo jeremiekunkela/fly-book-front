@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Line } from "react-chartjs-2";
 import {
     Chart as ChartJS,
@@ -56,7 +56,7 @@ const LineChart = () => {
     });
 
     useEffect(() => {
-        const eventSource = new EventSource("http://localhost:8080/realtime/reservation");
+        const eventSource = new EventSource(`${import.meta.env.VITE_SERVER_URL}/v1/realtime/reservation`);
 
         eventSource.onmessage = (event) => {
             try {

@@ -7,7 +7,6 @@ import { Card } from "../../components/Card/Card";
 import ExchangeRateSelector from "../../components/ExchangeRateSelector/ExchangeRateSelector";
 import currencySymbolMapping from "../../currencySymbolMapping";
 import CircularProgress from '@mui/material/CircularProgress';
-import Header from "../../components/Header/Header";
 
 const HomePage = () => {
   const [airports, setAirports] = useState([]);
@@ -23,13 +22,13 @@ const HomePage = () => {
     const fetchInitialData = async () => {
       setIsLoading(true);
       try {
-        const airportResponse = await client.get("/v1/airport/");
+        const airportResponse = await client.get("/v1/airport");
         setAirports(airportResponse.data);
 
-        const flightResponse = await client.get("/v1/flight/");
+        const flightResponse = await client.get("/v1/flight");
         setFlights(flightResponse.data);
 
-        const exchangeRateResponse = await client.get("/v1/currencies/");
+        const exchangeRateResponse = await client.get("/v1/currencies");
         setExchangeRates(exchangeRateResponse.data);
 
         if (exchangeRateResponse.data.length > 0) {
@@ -87,7 +86,6 @@ const HomePage = () => {
 
   return (
     <div className={styles.container}>
-      <Header />
       {isLoading ? (
         <div className={styles.loading}>
           <CircularProgress />
