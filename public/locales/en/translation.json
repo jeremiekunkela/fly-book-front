@@ -1,0 +1,9 @@
+{
+    "departure_airport": "Departure airport",
+    "arrival_airport": "Arrival airport",
+    "search": "Search",
+    "clear": "Clear",
+    "loading": "Loading...",
+    "error": "Error while fetching data"
+  }
+  

@@ -88,7 +88,7 @@ export default function SignIn() {
     }
 
     try {
-      const response = await client.post("/client/login", formData);
+      const response = await client.post("/v1/client/login", formData);
       setToken(response.data);
     
       navigate("/");

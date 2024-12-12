@@ -22,13 +22,13 @@ const HomePage = () => {
     const fetchInitialData = async () => {
       setIsLoading(true);
       try {
-        const airportResponse = await client.get("/airport/all");
+        const airportResponse = await client.get("/v1/airport/");
         setAirports(airportResponse.data);
 
-        const flightResponse = await client.get("/flight/all");
+        const flightResponse = await client.get("/v1/flight/");
         setFlights(flightResponse.data);
 
-        const exchangeRateResponse = await client.get("/currencies/fetch-rates");
+        const exchangeRateResponse = await client.get("/v1/currencies/");
         setExchangeRates(exchangeRateResponse.data);
 
         if (exchangeRateResponse.data.length > 0) {
@@ -50,7 +50,7 @@ const HomePage = () => {
 
     setIsLoading(true);
     try {
-      const response = await client.post("/flight/search", {
+      const response = await client.post("/v1/flight/search", {
         departureAirport,
         arrivalAirport,
       });
@@ -68,7 +68,7 @@ const HomePage = () => {
     setArrivalAirport("");
     setIsLoading(true);  
     try {
-      const response = await client.get("/flight/all");
+      const response = await client.get("/v1/flight");
       setFlights(response.data); 
     } catch (error) {
       showAlert("Error while fetching all flights", "error");

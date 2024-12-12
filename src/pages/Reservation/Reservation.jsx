@@ -14,7 +14,7 @@ export default function Reservation() {
     useEffect(() => {
         const fetchReservation = async () => {
             try {
-                const response = await client.get("/reservation");
+                const response = await client.get("/v1/reservation");
                 setReservations(response.data);
             } catch (error) {
                 console.error("Error while fetching reservation:", error);

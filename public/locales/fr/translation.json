@@ -1,0 +1,9 @@
+{
+    "departure_airport": "Aéroport de départ",
+    "arrival_airport": "Aéroport d'arrivée",
+    "search": "Rechercher",
+    "clear": "Effacer",
+    "loading": "Chargement...",
+    "error": "Erreur lors de la récupération des données"
+  }
+  

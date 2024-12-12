@@ -109,7 +109,7 @@ export default function SignUp() {
     }
 
     try {
-      const response = await client.post("/client/signup", formData);
+      const response = await client.post("/v1/client/signup", formData);
       console.log(response);
       navigate("/signin");
       showAlert('Successfully signed up', 'success');
